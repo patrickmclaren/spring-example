@@ -1,8 +1,8 @@
 Spring Example
 ==============
 
-Example [http://www.spring.io](Spring) REST application using:
-* [http://www.flywaydb.org](Flyway)
-* [http://www.hibernate.org](Hibernate)
+Example [Spring](http://www.spring.io) REST application using:
+* [Flyway](http://www.flywaydb.org)
+* [Hibernate](http://www.hibernate.org)
 
 All additional configuration (outside of spring-boot-starter-*) is performed via annotations. See `Application.java` for more details.
