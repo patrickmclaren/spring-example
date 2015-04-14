@@ -11,20 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    /**
-     * Get all users.
-     * TODO(patrick): Return collection
-     * TODO(patrick): How to specify HTTP method?
-     */
     @RequestMapping("/users")
     public List<User> users() {
-        return userService.findAllUsers();
+        return userRepository.findAll();
     }
 }

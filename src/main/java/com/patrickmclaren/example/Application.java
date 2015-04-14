@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
+import javax.persistence.EntityManagerFactory;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import org.hibernate.SessionFactory;
 
 @SpringBootApplication
 public class Application {
@@ -23,27 +23,36 @@ public class Application {
      * Start spring application; main entry-point.
      */
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication app = new SpringApplication(Application.class);
+
+        Properties properties = new Properties();
+        properties.setProperty("spring.jpa.hibernate.ddl-auto", "none");
+        app.setDefaultProperties(properties);
+
+        app.run(args);
     }
 
     @Bean
     @Autowired
-    public SessionFactory sessionFactory(DataSource dataSource) {
-        LocalSessionFactoryBuilder sessionFactoryBuilder = new LocalSessionFactoryBuilder(dataSource);
+    public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(false);
 
-        Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-        sessionFactoryBuilder.addProperties(hibernateProperties);
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("com.patrickmclaren.example");
+        factory.setDataSource(dataSource);
+        factory.afterPropertiesSet();
 
-        sessionFactoryBuilder.scanPackages("com.patrickmclaren.example");
-
-        return sessionFactoryBuilder.buildSessionFactory();
+        return factory.getObject();
     }
 
     @Bean
     @Autowired
-    public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
-        return new HibernateTransactionManager(sessionFactory);
+    public PlatformTransactionManager transactionManager(EntityManagerFactory factory) {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(factory);
+        return txManager;
     }
 
 }
