@@ -57,14 +57,31 @@ public class UserControllerTest {
         assertEquals(user, userController.getUser(Long.valueOf(0)));
     }
 
+    public User makeUser() {
+        User newUser = new User();
+        newUser.setFirstName("Bruce");
+        newUser.setLastName("Wayne");
+
+        return newUser;
+    }
+
     @Test
     public void testCreateUser() throws Exception {
-        // TODO(patrick): Implement this
+        User newUser = makeUser();
+
+        userController.createUser(newUser);
+        verify(userRepository).save(eq(newUser));
     }
 
     @Test
     public void testUpdateUser() throws Exception {
-        // TODO(patrick): Implement this
+        User userDetails = makeUser();
+
+        userController.updateUser(Long.valueOf(0), userDetails);
+        verify(userRepository).save(eq(user));
+
+        assertEquals(userDetails.getFirstName(), user.getFirstName());
+        assertEquals(userDetails.getLastName(), user.getLastName());
     }
 
     @Test
